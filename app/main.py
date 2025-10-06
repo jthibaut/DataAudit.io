@@ -19,26 +19,44 @@ if uploaded_file:
         input_path = save_uploaded_file(uploaded_file, tmp_dir)
 
         try:
+            # === Étape 1 : Génération du rapport HTML via ydata_profiling ===
             report_html = analyze_dataset(input_path, tmp_dir)
             st.success("Rapport HTML généré ✅")
 
-            # Show basic preview (iframe)
+            # === Étape 2 : Affichage d’un aperçu HTML ===
             st.markdown("**Aperçu du rapport (HTML)**")
             with open(report_html, "r", encoding="utf-8") as f:
                 html_content = f.read()
             st.components.v1.html(html_content, height=600, scrolling=True)
 
-            # Offer download
+            # === Étape 3 : Téléchargement du rapport HTML complet ===
             with open(report_html, "rb") as f:
-                st.download_button("Télécharger le rapport (HTML)", f, file_name=os.path.basename(report_html))
+                st.download_button("Télécharger le rapport (HTML)", f, file_name=os.path.basename(report_html), mime="text/html")
 
-            # Generate small PDF summary (ReportLab) and offer download
-            pdf_path = os.path.join(tmp_dir, "summary_report.pdf")
-            generate_summary_pdf(report_html, pdf_path)
-            with open(pdf_path, "rb") as f:
-                st.download_button("Télécharger le résumé (PDF)", f, file_name="rapport_resume.pdf")
+            # === Étape 4 : Génération du résumé PDF (version ReportLab) ===
+            summary_text = f"""
+            Rapport de DataAudit.io
+            ------------------------
+            Fichier analysé : {uploaded_file.name}
 
-            st.info("Pour automatiser emailing et paiements, configurez Stripe/SendGrid et déployez le backend FastAPI.")
+            Ce rapport contient une analyse automatisée du dataset :
+            - Statistiques descriptives
+            - Analyse de distribution
+            - Corrélations et valeurs manquantes
+            - Avertissements éventuels
 
+            Rapport complet disponible au format HTML.
+            """
+            pdf_bytes = generate_summary_pdf(summary_text)
+
+            st.download_button(
+                "📄 Télécharger le résumé (PDF)",
+                data=pdf_bytes,
+                file_name="rapport_resume.pdf",
+                mime="application/pdf"
+            )
+
+            st.info("📬 Prochaine étape : automatiser l’envoi d’email et le paiement (Stripe + SendGrid).")
+            
         except Exception as e:
             st.error(f"Erreur pendant l'analyse : {e}")
