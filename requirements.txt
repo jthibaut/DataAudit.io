@@ -1,8 +1,8 @@
 streamlit==1.25.0
-pandas==2.2.3
-ydata-profiling==4.4.0
-plotly==5.16.1
-reportlab==3.6.12
+pandas
+ydata-profiling>=4.17.0
+plotly
+reportlab
 pdfkit==1.0.0
 fastapi==0.95.2
 uvicorn==0.22.0
