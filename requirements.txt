@@ -5,11 +5,15 @@ ydata-profiling>=4.17.0
 plotly
 reportlab
 pdfkit
-fastapi
-uvicorn==0.22.0
-python-multipart==0.0.6
-stripe
-sendgrid==6.11.0
-python-dotenv==1.0.0
-beautifulsoup4
 
+python-multipart==0.0.6
+
+
+beautifulsoup4
+weasyprint
+
+fastapi==0.100.0
+uvicorn[standard]==0.22.0
+stripe>=5.0.0
+sendgrid>=6.0.0
+python-dotenv>=1.0.0

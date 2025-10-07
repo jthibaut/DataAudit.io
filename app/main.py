@@ -29,34 +29,44 @@ if uploaded_file:
                 html_content = f.read()
             st.components.v1.html(html_content, height=600, scrolling=True)
 
+            # === Paiement ===
+            if st.button("Payer et recevoir le rapport par email", key="pay_button_main"):
+                response = requests.post("https://dataaudit-backend.onrender.com/create-checkout-session", json={"email": email, "file_url": hosted_report_url},)
+                checkout_url = response.json().get("url")
+                if checkout_url:
+                    st.markdown(f"[👉 Accéder au paiement]({checkout_url})")
+
             # === Étape 3 : Téléchargement du rapport HTML complet ===
-            with open(report_html, "rb") as f:
-                st.download_button("Télécharger le rapport (HTML)", f, file_name=os.path.basename(report_html), mime="text/html")
+#            with open(report_html, "rb") as f:
+#                st.download_button("Télécharger le rapport (HTML)", f, file_name=os.path.basename(report_html), mime="text/html")
 
-            # === Étape 4 : Génération du résumé PDF (version ReportLab) ===
-            summary_text = f"""
-            Rapport de DataAudit.io
-            ------------------------
-            Fichier analysé : {uploaded_file.name}
+            # # === Étape 4 : Génération du résumé PDF (version ReportLab) ===
+            # summary_text = """
+            # Rapport de DataAudit.io
+            # ------------------------
+            # Fichier analysé : {uploaded_file.name}
 
-            Ce rapport contient une analyse automatisée du dataset :
-            - Statistiques descriptives
-            - Analyse de distribution
-            - Corrélations et valeurs manquantes
-            - Avertissements éventuels
+            # Ce rapport contient une analyse automatisée du dataset :
+            # - Statistiques descriptives
+            # - Analyse de distribution
+            # - Corrélations et valeurs manquantes
+            # - Avertissements éventuels
 
-            Rapport complet disponible au format HTML.
-            """
-            pdf_bytes = generate_summary_pdf(summary_text)
+            # Rapport complet disponible au format HTML.
+            # """
+            # pdf_bytes = generate_summary_pdf(summary_text)
 
-            st.download_button(
-                "📄 Télécharger le résumé (PDF)",
-                data=pdf_bytes,
-                file_name="rapport_resume.pdf",
-                mime="application/pdf"
-            )
+            # st.download_button(
+            #     "📄 Télécharger le résumé (PDF)",
+            #     data=pdf_bytes,
+            #     file_name="rapport_resume.pdf",
+            #     mime="application/pdf"
+            # )
 
-            st.info("📬 Prochaine étape : automatiser l’envoi d’email et le paiement (Stripe + SendGrid).")
+            # st.info("📬 Prochaine étape : automatiser l’envoi d’email et le paiement (Stripe + SendGrid).")
             
         except Exception as e:
             st.error(f"Erreur pendant l'analyse : {e}")
+
+            import requests
+
